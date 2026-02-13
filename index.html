@@ -1,4 +1,4 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -415,4 +415,375 @@ audio {
 
   
 </body>
+</html> -->
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Domain-Specific ASR – Audio Submission</title>
+
+<style>
+
+/* ===== Base ===== */
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 16px;
+  line-height: 1.5;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+h1, h2, h3 { margin-top: 0; }
+
+.small {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+code {
+  background: #334155;
+  padding: 2px 6px;
+  border-radius: 8px;
+  color: #f8fafc;
+}
+
+/* ===== Top Challenges Image ===== */
+.challenges img {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #334155;
+  display: block;
+}
+
+.image-credit {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ===== Demo Table ===== */
+.demo-table-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.demo-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.demo-table th,
+.demo-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #334155;
+  vertical-align: middle;
+}
+
+.demo-table th {
+  background: #0f172a;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.demo-table tr:hover {
+  background: #273449;
+}
+
+.demo-table audio {
+  width: 180px;
+}
+
+/* ===== Cards ===== */
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-block;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid #475569;
+  background: #1e293b;
+  color: #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background: #334155;
+}
+
+.btn.primary {
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #1d4ed8;
+}
+
+/* ===== Form Fields ===== */
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  margin-top: 6px;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+/* ===== Contribute Layout (Sticky Image + Form) ===== */
+.contribute-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+@media (min-width: 980px) {
+  .contribute-grid {
+    grid-template-columns: 0.9fr 1.1fr;
+    align-items: start;
+  }
+}
+
+.req-sticky {
+  background: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 14px;
+  color: #0f172a;
+}
+
+.req-sticky img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.req-sticky .image-credit {
+  color: #475569;
+}
+
+@media (min-width: 980px) {
+  .req-sticky {
+    position: sticky;
+    top: 20px;
+  }
+}
+
+.form-stack .card {
+  margin-bottom: 16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== Top Image ===== -->
+<section class="challenges">
+  <img src="assets/images/asr_challenges.png"
+       alt="Domain-aware ASR challenges: lab noise and terminology">
+  <p class="image-credit">AI-generated illustration (OpenAI)</p>
+</section>
+
+<!-- ===== Demo Section ===== -->
+<section>
+<h2>Model Demos</h2>
+<div class="demo-table-wrapper">
+<table class="demo-table">
+<thead>
+<tr>
+<th>Description</th>
+<th>Transcription</th>
+<th>Audio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office noise (no speech)</td>
+<td>Keyboard clicks and ventilation background.</td>
+<td><audio controls preload="metadata"><source src="assets/audio/demo1.wav" type="audio/wav"></audio></td>
+</tr>
+<tr>
+<td>Street ambience</td>
+<td>Background traffic and bicycle bell.</td>
+<td><audio controls preload="metadata"><source src="assets/audio/demo2.wav" type="audio/wav"></audio></td>
+</tr>
+<tr>
+<td>Cafeteria ambience</td>
+<td>Dishes clinking and crowd murmur.</td>
+<td><audio controls preload="metadata"><source src="assets/audio/demo3.wav" type="audio/wav"></audio></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ===== Contribution Section ===== -->
+<h1>Contribute to the Dataset</h1>
+<p class="small">
+Please fill in your details, download the metadata file, then upload your audio to FAUbox.
+</p>
+
+<section class="contribute-grid">
+
+<!-- Sticky Image -->
+<aside class="req-sticky">
+  <img src="assets/images/domain_asr_requirements.png"
+       alt="We need lab-noise audio and example lab sentences">
+  <p class="image-credit">AI-generated illustration (OpenAI)</p>
+</aside>
+
+<!-- Form + Upload -->
+<div class="form-stack">
+
+<div class="card">
+<h2>Step 1 — Your Details</h2>
+
+<label for="email">Email</label>
+<input id="email" type="email" required>
+
+<label for="occupation">Occupation</label>
+<select id="occupation" required>
+<option value="" disabled selected>Select your occupation</option>
+<option value="phd_student">PhD Student</option>
+<option value="postdoc">Postdoc</option>
+<option value="professor">Professor</option>
+<option value="engineer">Engineer</option>
+<option value="industry_researcher">Industry Researcher</option>
+<option value="other">Other</option>
+</select>
+
+<label for="university">University / Organization</label>
+<input id="university" type="text" required>
+
+<h3>Example Sentences (optional)</h3>
+<label for="s1">Sentence 1</label>
+<input id="s1" type="text">
+
+<label for="s2">Sentence 2</label>
+<input id="s2" type="text">
+
+<label for="s3">Sentence 3</label>
+<input id="s3" type="text">
+
+<label for="consent">Consent</label>
+<select id="consent" required>
+<option value="">Select…</option>
+<option value="yes">I consent to using my audio for this project.</option>
+<option value="no">I do not consent</option>
+</select>
+
+<p class="small">
+Your submission ID: <code id="sid">—</code><br>
+Please name your audio file exactly as: <code id="fname">—</code>
+</p>
+
+<button class="btn" id="downloadBtn" type="button">
+Download metadata (.csv)
+</button>
+</div>
+
+<div class="card">
+<h2>Step 2 — Upload Audio</h2>
+<a class="btn primary"
+href="https://faubox.rrze.uni-erlangen.de/preparefilelink?folderID=28b2VVh4F2e1GbJakQUT4"
+target="_blank">
+Upload audio to FAUbox
+</a>
+</div>
+
+</div>
+</section>
+
+<!-- ===== Script ===== -->
+<script>
+function makeId() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const rand = Math.random().toString(16).slice(2,8).toUpperCase();
+  return `FAU-${y}${m}${day}-${rand}`;
+}
+
+function csvEsc(v){
+  return `"${String(v ?? "").replaceAll('"','""')}"`;
+}
+
+const sid = makeId();
+document.getElementById("sid").textContent = sid;
+document.getElementById("fname").textContent = sid + ".wav";
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const email = email.value.trim();
+  const occupation = occupation.value;
+  const university = university.value.trim();
+  const consent = consent.value;
+
+  if (!email || !occupation || !university || consent !== "yes") {
+    alert("Please complete all required fields and consent.");
+    return;
+  }
+
+  const s1 = s1.value.trim();
+  const s2 = s2.value.trim();
+  const s3 = s3.value.trim();
+
+  const header = "submission_id,email,occupation,university,consent,sentence1,sentence2,sentence3,timestamp\n";
+  const row = [
+    sid,
+    csvEsc(email),
+    csvEsc(occupation),
+    csvEsc(university),
+    "yes",
+    csvEsc(s1),
+    csvEsc(s2),
+    csvEsc(s3),
+    new Date().toISOString()
+  ].join(",") + "\n";
+
+  const blob = new Blob([header + row], {type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = sid + ".csv";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
 </html>
+
