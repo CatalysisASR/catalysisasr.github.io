@@ -254,8 +254,8 @@ Fill in your details, optionally download your metadata CSV for your records, th
     <div class="card">
       <h2>Step 2 — Upload Audio</h2>
 
-      <label for="audioFiles">Upload up to 10 files (.wav, .mp3, .m4a), total ≤ 5 MB</label>
-      <input id="audioFiles" type="file" multiple accept=".wav,.mp3,.m4a,audio/*" required>
+      <label for="audioFiles">Upload up to 10 files (.wav, .mp3), total ≤ 10 MB</label>
+      <input id="audioFiles" type="file" multiple accept=".wav,.mp3" required>
 
       <p class="small" id="sizeHint" style="margin-top:8px;"></p>
 
@@ -270,104 +270,35 @@ Fill in your details, optionally download your metadata CSV for your records, th
 </section>
 
 <script>
-/* ===== API endpoints ===== */
-const API_BASE = "https://71z3aqiv16.execute-api.us-east-1.amazonaws.com/prod";
+const API_BASE        = "https://71z3aqiv16.execute-api.us-east-1.amazonaws.com/prod";
 const PRESIGN_ENDPOINT = API_BASE + "/presign";
 const SUBMIT_ENDPOINT  = API_BASE + "/submit";
 
-/* ===== Limits ===== */
 const MAX_FILES = 10;
-const MAX_TOTAL_BYTES = 5 * 1024 * 1024; // 5 MB total
-const ALLOWED_EXT = new Set(["wav","mp3","m4a"]);
+const MAX_TOTAL_BYTES = 10 * 1024 * 1024;
+const ALLOWED_EXT = new Set(["wav","mp3"]);
 
-/* ===== Helpers ===== */
 function makeId() {
   const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
   const rand = Math.random().toString(16).slice(2,8).toUpperCase();
-  return `FAU-${y}${m}${day}-${rand}`;
+  return `FAU-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${rand}`;
 }
 
-function csvEsc(v){
-  return `"${String(v ?? "").replaceAll('"','""')}"`;
-}
-
-function bytesToMB(b){ return (b / (1024*1024)).toFixed(2); }
-
-/* ===== Submission ID ===== */
-const sid = makeId();
-document.getElementById("sid").textContent = sid;
-
-/* ===== Download metadata (local CSV) ===== */
-document.getElementById("downloadBtn").addEventListener("click", () => {
-  const email = document.getElementById("email").value.trim();
-  const occupation = document.getElementById("occupation").value;
-  const university = document.getElementById("university").value.trim();
-  const consent = document.getElementById("consent").value;
-
-  if (!email || !occupation || !university || consent !== "yes") {
-    alert("Please complete all required fields and consent.");
-    return;
-  }
-
-  const sentenceInputs = document.querySelectorAll(".sentence-input");
-  const sentences = [];
-  sentenceInputs.forEach(input => sentences.push(csvEsc(input.value.trim())));
-
-  const headerBase = ["submission_id","email","occupation","university","consent"];
-  const sentenceHeaders = sentences.map((_, i) => `sentence${i+1}`);
-  const header = [...headerBase, ...sentenceHeaders, "timestamp"].join(",") + "\n";
-
-  const row = [
-    sid,
-    csvEsc(email),
-    csvEsc(occupation),
-    csvEsc(university),
-    "yes",
-    ...sentences,
-    new Date().toISOString()
-  ].join(",") + "\n";
-
-  const blob = new Blob([header + row], {type:"text/csv"});
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = sid + ".csv";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-});
+const sid = makeId(); // used internally, not shown
 
 /* ===== Dynamic sentence fields ===== */
 const container = document.getElementById("sentenceContainer");
 
 function updateLabels() {
-  const groups = container.querySelectorAll(".sentence-group");
-
-  groups.forEach((group, index) => {
-    const label = group.querySelector("label");
-    label.textContent = "Sentence " + (index + 1);
-
-    let removeBtn = group.querySelector(".remove-btn");
-    if (index === 0) {
-      if (removeBtn) removeBtn.remove();
-    } else {
-      if (!removeBtn) {
-        removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.className = "remove-btn";
-        removeBtn.textContent = "×";
-        removeBtn.addEventListener("click", () => {
-          group.remove();
-          updateLabels();
-        });
-        group.appendChild(removeBtn);
-      }
+  container.querySelectorAll(".sentence-group").forEach((group, i) => {
+    group.querySelector("label").textContent = `Sentence ${i + 1}`;
+    let btn = group.querySelector(".remove-btn");
+    if (i === 0) { btn?.remove(); return; }
+    if (!btn) {
+      btn = Object.assign(document.createElement("button"),
+        {type:"button", className:"remove-btn", textContent:"×"});
+      btn.addEventListener("click", () => { group.remove(); updateLabels(); });
+      group.appendChild(btn);
     }
   });
 }
@@ -375,144 +306,98 @@ function updateLabels() {
 document.getElementById("addSentenceBtn").addEventListener("click", () => {
   const wrapper = document.createElement("div");
   wrapper.className = "sentence-group";
-
-  const label = document.createElement("label");
-  label.textContent = "Sentence";
-
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "sentence-input";
-
-  wrapper.appendChild(label);
-  wrapper.appendChild(input);
+  wrapper.innerHTML = `<label>Sentence</label><input type="text" class="sentence-input">`;
   container.appendChild(wrapper);
-
   updateLabels();
 });
 
 updateLabels();
 
 /* ===== Collect form data ===== */
-function collectFormDataOrAlert() {
-  const email = document.getElementById("email").value.trim();
+function collectFormData() {
+  const email      = document.getElementById("email").value.trim();
   const occupation = document.getElementById("occupation").value;
   const university = document.getElementById("university").value.trim();
-  const consent = document.getElementById("consent").value;
+  const consent    = document.getElementById("consent").value;
 
   if (!email || !occupation || !university || consent !== "yes") {
-    alert("Please complete all required fields and consent.");
-    return null;
+    alert("Please complete all required fields and consent."); return null;
   }
 
-  const sentenceInputs = document.querySelectorAll(".sentence-input");
-  const sentences = [];
-  sentenceInputs.forEach(input => {
-    const v = input.value.trim();
-    if (v) sentences.push(v);
-  });
+  const sentences = [...document.querySelectorAll(".sentence-input")]
+    .map(i => i.value.trim()).filter(Boolean);
 
-  return {
-    submission_id: sid,
-    email,
-    occupation,
-    university,
-    consent,
-    sentences,
-    timestamp: new Date().toISOString()
-  };
+  return { submission_id: sid, email, occupation, university,
+           consent, sentences, timestamp: new Date().toISOString() };
 }
 
-/* ===== Show selected total size ===== */
+/* ===== File size hint ===== */
 const audioInput = document.getElementById("audioFiles");
-const sizeHint = document.getElementById("sizeHint");
+const sizeHint   = document.getElementById("sizeHint");
 
 audioInput.addEventListener("change", () => {
-  const files = Array.from(audioInput.files || []);
-  const total = files.reduce((s,f) => s + (f.size || 0), 0);
+  const files = [...audioInput.files];
+  const total = files.reduce((s, f) => s + f.size, 0);
   sizeHint.textContent = files.length
-    ? `Selected: ${files.length} file(s), total ${bytesToMB(total)} MB (limit 5.00 MB)`
-    : "";
+    ? `Selected: ${files.length} file(s), ${(total/1024/1024).toFixed(2)} MB / 10 MB` : "";
 });
 
-/* ===== Upload + submit ===== */
+/* ===== Upload ===== */
 document.getElementById("uploadBtn").addEventListener("click", async () => {
   const status = document.getElementById("uploadStatus");
-  const btn = document.getElementById("uploadBtn");
-
+  const btn    = document.getElementById("uploadBtn");
   status.textContent = "";
-  const data = collectFormDataOrAlert();
-  if (!data) return;
 
-  const files = Array.from(audioInput.files || []);
-  if (files.length === 0) { alert("Please select audio files."); return; }
-  if (files.length > MAX_FILES) { alert("Max 10 files."); return; }
+  const data  = collectFormData(); if (!data) return;
+  const files = [...audioInput.files];
+  if (!files.length)             { alert("Please select audio files."); return; }
+  if (files.length > MAX_FILES)  { alert("Max 10 files.");              return; }
 
-  const total = files.reduce((s,f) => s + (f.size || 0), 0);
-  if (total > MAX_TOTAL_BYTES) { alert("Total size must be ≤ 5 MB."); return; }
+  const total = files.reduce((s, f) => s + f.size, 0);
+  if (total > MAX_TOTAL_BYTES)   { alert("Total size must be ≤ 10 MB."); return; }
 
-  // file descriptors for backend presign
   let descriptors;
   try {
     descriptors = files.map(f => {
-      const ext = (f.name.split(".").pop() || "").toLowerCase();
+      const ext = f.name.split(".").pop().toLowerCase();
       if (!ALLOWED_EXT.has(ext)) throw new Error("Not allowed: " + f.name);
       return { ext, content_type: f.type || "application/octet-stream", size: f.size };
     });
-  } catch (e) {
-    alert(e.message || String(e));
-    return;
-  }
+  } catch (e) { alert(e.message); return; }
 
   btn.disabled = true;
-
   try {
     status.textContent = "Requesting upload permissions…";
-
     const r = await fetch(PRESIGN_ENDPOINT, {
-      method: "POST",
-      headers: {"content-type":"application/json"},
+      method: "POST", headers: {"content-type":"application/json"},
       body: JSON.stringify({ submission_id: sid, files: descriptors })
     });
-
     if (!r.ok) throw new Error(await r.text());
-
     const { presigns } = await r.json();
-    if (!Array.isArray(presigns) || presigns.length !== files.length) {
-      throw new Error("Presign response mismatch.");
-    }
 
     const audio_keys = [];
-
     for (let i = 0; i < files.length; i++) {
       status.textContent = `Uploading ${i+1}/${files.length}…`;
-
-      const file = files[i];
       const { key, upload } = presigns[i];
-
       const fd = new FormData();
       Object.entries(upload.fields).forEach(([k,v]) => fd.append(k, v));
-      fd.append("file", file);
-
+      fd.append("file", files[i]);
       const up = await fetch(upload.url, { method: "POST", body: fd });
       if (!up.ok) throw new Error(`Upload failed for file ${i+1}`);
-
       audio_keys.push(key);
     }
 
     status.textContent = "Saving metadata…";
-
     const s = await fetch(SUBMIT_ENDPOINT, {
-      method: "POST",
-      headers: {"content-type":"application/json"},
+      method: "POST", headers: {"content-type":"application/json"},
       body: JSON.stringify({ ...data, audio_keys })
     });
-
     if (!s.ok) throw new Error(await s.text());
 
-    status.textContent = `Done ✅ Submission: ${sid}`;
+    status.textContent = "Done ✅ Thank you for your submission!";
   } catch (e) {
     console.error(e);
-    status.textContent = "Failed ❌ " + (e?.message || e);
+    status.textContent = "Failed ❌ " + (e?.message ?? e);
   } finally {
     btn.disabled = false;
   }
