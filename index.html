@@ -186,9 +186,9 @@ input::placeholder { color: #94a3b8; }
 
 <!-- ===== Contribution Section ===== -->
 <h1>Contribute to the Dataset</h1>
-<p class="small">
+<!-- <p class="small">
 Fill in your details, optionally download your metadata CSV for your records, then upload your audio below.
-</p>
+</p> -->
 
 <section class="contribute-grid">
 
@@ -233,14 +233,14 @@ Fill in your details, optionally download your metadata CSV for your records, th
       <button type="button" class="btn" id="addSentenceBtn" style="margin-top:10px;">
         + Add another sentence
       </button>
-
+<!-- 
       <label for="consent">Consent</label>
       <select id="consent" required>
         <option value="">Select…</option>
         <option value="yes">I consent to using my audio for this project.</option>
         <option value="no">I do not consent</option>
-      </select>
-
+      </select> -->
+<!-- 
       <p class="small">
         Your submission ID: <code id="sid">—</code><br>
         (You can upload up to 10 files. We store them under this submission ID.)
@@ -248,7 +248,7 @@ Fill in your details, optionally download your metadata CSV for your records, th
 
       <button class="btn" id="downloadBtn" type="button">
         Download metadata (.csv)
-      </button>
+      </button> -->
     </div>
 
     <div class="card">
@@ -265,11 +265,23 @@ Fill in your details, optionally download your metadata CSV for your records, th
 
       <p class="small" id="uploadStatus" style="margin-top:10px;"></p>
     </div>
-
+    <div class="card" style="margin-top:12px; background:#0f172a; border:1px solid #334155;">
+          <h3 style="margin:0 0 8px 0;">Data use & privacy notice</h3>
+          <p class="small" style="margin:0;">
+                By uploading, you agree that your <b>audio recordings</b> and <b>example sentences</b> may be used to
+                train and evaluate speech recognition models for research purposes.
+                Your recordings and sentences will <b>not</b> be published as part of the released model.
+                We will store and process your contribution in an <b>anonymized</b> form and keep it confidential.
+                <br><br>
+                Your <b>email</b> and <b>organization</b> are collected only for submission tracking and potential follow-up;
+                they are <b>not</b> used for model training and are not shared publicly.
+            </p>
+    </div>
   </div>
 </section>
 
 <script>
+// Update API end point for presign and ssubmit
 const API_BASE        = "https://71z3aqiv16.execute-api.us-east-1.amazonaws.com";
 const PRESIGN_ENDPOINT = API_BASE + "/presign";
 const SUBMIT_ENDPOINT  = API_BASE + "/submit";
@@ -318,17 +330,17 @@ function collectFormData() {
   const email      = document.getElementById("email").value.trim();
   const occupation = document.getElementById("occupation").value;
   const university = document.getElementById("university").value.trim();
-  const consent    = document.getElementById("consent").value;
+  // const consent    = document.getElementById("consent").value;
 
-  if (!email || !occupation || !university || consent !== "yes") {
-    alert("Please complete all required fields and consent."); return null;
+  if (!email || !occupation || !university) {
+    alert("Please complete all required fields"); return null;
   }
 
   const sentences = [...document.querySelectorAll(".sentence-input")]
     .map(i => i.value.trim()).filter(Boolean);
 
   return { submission_id: sid, email, occupation, university,
-           consent, sentences, timestamp: new Date().toISOString() };
+           sentences, timestamp: new Date().toISOString() };
 }
 
 /* ===== File size hint ===== */
@@ -387,14 +399,14 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
       audio_keys.push(key);
     }
 
-    status.textContent = "Saving metadata…";
+    // status.textContent = "Saving metadata…";
     const s = await fetch(SUBMIT_ENDPOINT, {
       method: "POST", headers: {"content-type":"application/json"},
       body: JSON.stringify({ ...data, audio_keys })
     });
     if (!s.ok) throw new Error(await s.text());
 
-    status.textContent = "Done ✅ Thank you for your submission!";
+    status.textContent = "Thank you for your submission!";
   } catch (e) {
     console.error(e);
     status.textContent = "Failed ❌ " + (e?.message ?? e);
