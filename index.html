@@ -116,7 +116,13 @@ input::placeholder { color: #94a3b8; }
   padding: 14px;
   color: #0f172a;
 }
-.req-sticky img { width: 100%; border-radius: 12px; display: block; }
+.req-sticky img { 
+  width: 110%;          /* makes it larger than its container */
+  max-width: 900px;     /* increase if needed */
+  margin: 0 auto;
+  display: block;
+  border-radius: 12px;
+}
 .req-sticky .image-credit { color: #475569; }
 
 @media (min-width: 980px) {
@@ -230,7 +236,7 @@ input::placeholder { color: #94a3b8; }
     </div>
 
     <div class="card">
-      <h2>Step 2 — Example sentences (optional)</h2>
+      <h2>Step 2 — Sentences used in lab</h2>
       <p class="small">
         Provide example sentences you would normally use when documenting
         catalysis synthesis or experimental procedures in your daily lab work.
