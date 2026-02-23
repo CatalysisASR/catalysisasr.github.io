@@ -123,12 +123,14 @@ input::placeholder { color: #94a3b8; }
   .req-sticky {
     position: sticky;
     top: 20px;
-    height: 90vh;   /* takes 90% of screen height */
+    height:80vh;   /* takes 80% of screen height */
+    max-width: 420px;   /* control width here */
+    margin: 0 auto;     /* center it */
   }
 
   .req-sticky img {
-    height: 95%;
-    width: 95%;
+    height: 100%;
+    width: 100%;
     object-fit: cover;
   }
 }
