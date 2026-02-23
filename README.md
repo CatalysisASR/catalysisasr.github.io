@@ -2,4 +2,4 @@ This repo is for hosting a github page for collecting the audio files with the b
 
 
 This repository contains only the website code.
-Audio files uploaded via FAUbox are not part of this repository and are not licensed under the MIT License.
+Audio files and sentences uploaded are not part of this repository and are not licensed under the MIT License.
