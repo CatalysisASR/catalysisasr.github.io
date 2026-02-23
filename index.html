@@ -120,8 +120,17 @@ input::placeholder { color: #94a3b8; }
 .req-sticky .image-credit { color: #475569; }
 
 @media (min-width: 980px) {
-  .req-sticky { position: sticky; top: 20px; }
-  .req-sticky img { height: 700px; object-fit: contain; }
+  .req-sticky {
+    position: sticky;
+    top: 20px;
+    height: 90vh;   /* takes 90% of screen height */
+  }
+
+  .req-sticky img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
 }
 
 .form-stack .card { margin-bottom: 16px; }
